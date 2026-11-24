@@ -1,0 +1,13 @@
+{
+  // VS Code MCP config with comments and trailing commas
+  "servers": {
+    "unpinned-uvx-fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+    },
+    "plaintext-remote": {
+      "type": "http",
+      "url": "http://10.0.0.42:8080/mcp", // non-localhost HTTP
+    },
+  },
+}
