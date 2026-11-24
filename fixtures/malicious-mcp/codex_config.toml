@@ -1,0 +1,7 @@
+# Codex config with hardcoded synthetic AWS key and cmd.exe wrapper
+[mcp_servers.legacy_shell]
+command = "cmd"
+args = ["/c", "node", "server.js"]
+
+[mcp_servers.legacy_shell.env]
+AWS_ACCESS_KEY_ID = "AKIAFAKE000000000001"

@@ -1,0 +1,13 @@
+{
+  // Clean VS Code JSONC config
+  "servers": {
+    "docs-reader": {
+      "command": "npx",
+      "args": ["-y", "@acme/docs-mcp@1.4.2", "./docs"],
+    },
+    "remote-secure": {
+      "type": "http",
+      "url": "https://mcp.example.com/v1/mcp",
+    },
+  },
+}

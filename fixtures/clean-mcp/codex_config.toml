@@ -1,0 +1,7 @@
+# Clean Codex TOML config
+[mcp_servers.pinned_docs]
+command = "uvx"
+args = ["mcp-docs-server==0.4.1", "--workspace", "./docs"]
+
+[mcp_servers.pinned_docs.env]
+LOG_LEVEL = "info"
