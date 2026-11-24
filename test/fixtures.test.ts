@@ -60,8 +60,8 @@ describe('Red-team and clean fixture suite', () => {
     assert.equal(result.findings.length, 0, `Expected 0 findings, got: ${JSON.stringify(result.findings)}`);
   });
 
-  it('CLI returns exitCode 1 on malicious, 0 on clean, and 2 on invalid args', () => {
-    const mal = runCli([
+  it('CLI returns exitCode 1 on malicious, 0 on clean, and 2 on invalid args', async () => {
+    const mal = await runCli([
       'scan',
       '--no-global',
       '--config',
@@ -73,7 +73,7 @@ describe('Red-team and clean fixture suite', () => {
     const parsedMal = JSON.parse(mal.stdout) as { summary: { totalFindings: number } };
     assert.ok(parsedMal.summary.totalFindings >= 9);
 
-    const clean = runCli([
+    const clean = await runCli([
       'scan',
       '--no-global',
       '--config',
@@ -85,7 +85,7 @@ describe('Red-team and clean fixture suite', () => {
     const parsedClean = JSON.parse(clean.stdout) as { findings: unknown[] };
     assert.equal(parsedClean.findings.length, 0);
 
-    const bad = runCli(['scan', '--format', 'xml']);
+    const bad = await runCli(['scan', '--format', 'xml']);
     assert.equal(bad.exitCode, 2);
   });
 });
