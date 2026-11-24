@@ -86,6 +86,7 @@ export interface AuditResult {
   cwd: string;
   configs: DiscoveredConfig[];
   findings: Finding[];
+  inspections?: ServerInspectionResult[];
   summary: AuditSummary;
 }
 
@@ -100,6 +101,9 @@ export interface ScanOptions {
   platform?: NodeJS.Platform;
   env?: NodeJS.ProcessEnv;
   homeDir?: string;
+  inspect?: boolean;
+  inspectTimeoutMs?: number;
+  lockfilePath?: string;
 }
 
 export interface ServerRule {
@@ -114,4 +118,60 @@ export interface ConfigRule {
   severity: Severity;
   title: string;
   evaluate: (config: DiscoveredConfig) => Finding[];
+}
+
+export interface McpToolSchema {
+  name: string;
+  description?: string;
+  inputSchema?: Record<string, unknown>;
+}
+
+export interface McpResourceSchema {
+  uri: string;
+  name?: string;
+  description?: string;
+  mimeType?: string;
+}
+
+export interface ServerInspectionResult {
+  serverName: string;
+  configPath: string;
+  transport: TransportKind;
+  status: 'ok' | 'error' | 'skipped';
+  protocolVersion?: string;
+  serverInfo?: { name?: string; version?: string };
+  tools: McpToolSchema[];
+  resources: McpResourceSchema[];
+  error?: string;
+}
+
+export interface InspectionRule {
+  id: string;
+  severity: Severity;
+  title: string;
+  evaluate: (inspection: ServerInspectionResult, config: DiscoveredConfig) => Finding[];
+}
+
+export interface LockfileToolEntry {
+  descriptionHash: string;
+  inputSchemaHash: string;
+}
+
+export interface LockfileResourceEntry {
+  name?: string;
+  descriptionHash: string;
+  mimeType?: string;
+}
+
+export interface LockfileServerEntry {
+  transport: TransportKind;
+  tools: Record<string, LockfileToolEntry>;
+  resources: Record<string, LockfileResourceEntry>;
+}
+
+export interface AuditLockfile {
+  lockfileVersion: 1;
+  generatedAt: string;
+  toolVersion: string;
+  servers: Record<string, LockfileServerEntry>;
 }

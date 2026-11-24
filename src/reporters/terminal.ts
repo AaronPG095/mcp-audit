@@ -58,10 +58,26 @@ export function formatTerminalReport(
   const p = useColor ? ANSI_PALETTE : PLAIN_PALETTE;
   const lines: string[] = [];
 
-  lines.push(`${p.bold}mcp-audit v${result.version}${p.reset} ${p.dim}(read-only static scan)${p.reset}`);
+  const modeLabel = result.inspections ? 'read-only static + dynamic scan' : 'read-only static scan';
+  lines.push(`${p.bold}mcp-audit v${result.version}${p.reset} ${p.dim}(${modeLabel})${p.reset}`);
   lines.push(
     `Scanned ${result.summary.configsScanned} config(s), ${result.summary.serversScanned} enabled server(s).`,
   );
+
+  if (result.inspections) {
+    const okCount = result.inspections.filter((i) => i.status === 'ok').length;
+    const errCount = result.inspections.length - okCount;
+    lines.push(
+      `Inspected ${result.inspections.length} server(s): ${okCount} ok, ${errCount} error/skipped.`,
+    );
+    for (const insp of result.inspections) {
+      if (insp.status !== 'ok') {
+        lines.push(
+          `${p.yellow}[WARN]${p.reset} Could not inspect ${insp.serverName} (${insp.transport}): ${insp.error ?? insp.status}`,
+        );
+      }
+    }
+  }
 
   for (const cfg of result.configs) {
     if (cfg.parseError) {
