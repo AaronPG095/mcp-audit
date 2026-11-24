@@ -18,9 +18,22 @@ CLI (src/cli.ts)
               Formats deterministic terminal or JSON output and computes CI exit code
 ```
 
-## Extension Seams for Milestones 2 & 3
-- **Milestone 2 (`--inspect`, `lock`, `diff`):**
-  - `McpServerConfig` preserves `transport`, `command`, `args`, `url`, `env`, and `headers` so a read-only MCP client (`initialize`, `tools/list`, `resources/list` only — never `tools/call`) can inspect live tool schemas.
-  - Tool-poisoning rules (`MCP-INJ-001..004`) and lockfile drift (`MCP-DRIFT-001`) plug into `src/engine.ts` alongside `STATIC_SERVER_RULES` / `STATIC_CONFIG_RULES` and reuse `Finding` + `AuditResult`.
-- **Milestone 3 (`--format sarif`, `THREAT_MODEL.md`):**
+## Milestone 2 Pipeline (Dynamic Read-Only Inspection & Schema Drift)
+
+```
+CLI (scan --inspect | lock | diff)
+  └─> Engine (src/engine.ts: runAudit)
+        ├─> Static Pipeline (same as Milestone 1)
+        ├─> Read-Only Inspector (src/inspect/client.ts)
+        │     Stdio (child_process) & Streamable HTTP/SSE (fetch)
+        │     Structurally restricted to: initialize, notifications/initialized, tools/list, resources/list
+        ├─> Dynamic Rule Engine (src/rules/dynamicRules.ts)
+        │     MCP-INJ-001..004 (prompt injection, exfiltration, shadowing, hidden Unicode)
+        │     Dynamic upgrade of MCP-PRIV-004 when live schemas confirm read + outbound/exec
+        └─> Schema Lockfile & Drift (src/lockfile/lockfile.ts)
+              Canonical SHA-256 hashes in mcp-audit.lock.json; MCP-DRIFT-001 on rug-pull/schema drift
+```
+
+## Extension Seams for Milestone 3
+- **`--format sarif`, GitHub Action, `THREAT_MODEL.md`:**
   - `src/reporters/sarif.ts` will consume `AuditResult` directly to emit SARIF v2.1.0.
