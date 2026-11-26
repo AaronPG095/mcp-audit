@@ -43,7 +43,7 @@ None
 
 - [x] Implement SARIF v2.1.0 reporter (`src/types.ts`, `src/reporters/sarif.ts`, `src/cli.ts`, `test/sarif.test.ts`) (AC1)
 - [x] Add composite GitHub Action (`action.yml`) and CI workflow (`.github/workflows/ci.yml`) (AC2)
-- [ ] Write `THREAT_MODEL.md`, `README.md`, MIT `LICENSE`, and update `ARCHITECTURE.md` (AC3)
+- [x] Write `THREAT_MODEL.md`, `README.md`, MIT `LICENSE`, and update `ARCHITECTURE.md` (AC3)
 - [ ] Update `package.json` to `0.2.0` and verify `typecheck`, `build`, `test`, and `npm pack --dry-run` (AC4)
 
 ## Risks
