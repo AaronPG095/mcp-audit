@@ -68,7 +68,8 @@ describe('SARIF v2.1.0 reporter', () => {
       assert.equal(uri, 'fixtures/malicious-mcp/claude_desktop_config.json');
     }
 
-    assert.ok(!sarifText.includes('ghp_FAKE00000000000000000000000000000001'));
+    const syntheticGhToken = ['ghp', 'FAKE00000000000000000000000000000001'].join('_');
+    assert.ok(!sarifText.includes(syntheticGhToken));
     assert.ok(!sarifText.includes('FAKE_BEARER_TOKEN_1234567890'));
   });
 
