@@ -1,6 +1,6 @@
 {
   "name": "mcp-audit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fast, read-only, zero-dependency MCP Security & Permission Auditor CLI",
   "type": "module",
   "bin": {
@@ -12,8 +12,19 @@
   "files": [
     "dist",
     "README.md",
-    "ARCHITECTURE.md"
+    "ARCHITECTURE.md",
+    "THREAT_MODEL.md",
+    "LICENSE",
+    "action.yml"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AaronPG095/mcp-audit.git"
+  },
+  "homepage": "https://github.com/AaronPG095/mcp-audit#readme",
+  "bugs": {
+    "url": "https://github.com/AaronPG095/mcp-audit/issues"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.test.json --noEmit",
