@@ -34,6 +34,16 @@ CLI (scan --inspect | lock | diff)
               Canonical SHA-256 hashes in mcp-audit.lock.json; MCP-DRIFT-001 on rug-pull/schema drift
 ```
 
-## Extension Seams for Milestone 3
-- **`--format sarif`, GitHub Action, `THREAT_MODEL.md`:**
-  - `src/reporters/sarif.ts` will consume `AuditResult` directly to emit SARIF v2.1.0.
+## Milestone 3 Pipeline (SARIF, GitHub Action & Threat Model)
+
+```
+AuditResult
+  ├─> src/reporters/terminal.ts   Human-readable ANSI/plain report
+  ├─> src/reporters/json.ts       Deterministic JSON report
+  └─> src/reporters/sarif.ts      SARIF v2.1.0 (GitHub Code Scanning, partialFingerprints, relative URIs)
+
+CI & Packaging
+  ├─> action.yml                  Composite GitHub Action with optional upload-sarif
+  ├─> .github/workflows/ci.yml    Cross-OS (ubuntu-latest, windows-latest) typecheck, build, test
+  └─> THREAT_MODEL.md             Trust boundaries, 14-rule coverage, and explicit non-goals
+```

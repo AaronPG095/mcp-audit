@@ -1,0 +1,106 @@
+name: 'mcp-audit'
+description: 'Read-only, zero-dependency MCP Security & Permission Auditor CLI'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  cwd:
+    description: 'Project directory to scan'
+    required: false
+    default: '.'
+  config:
+    description: 'Optional additional MCP config file path'
+    required: false
+    default: ''
+  inspect:
+    description: 'Enable read-only live tools/list + resources/list inspection'
+    required: false
+    default: 'false'
+  fail-on:
+    description: 'Severity threshold to fail on (CRITICAL | HIGH | MEDIUM | INFO | none)'
+    required: false
+    default: 'HIGH'
+  format:
+    description: 'Output format (terminal | json | sarif)'
+    required: false
+    default: 'terminal'
+  sarif-file:
+    description: 'Path to write SARIF output when format=sarif or upload-sarif=true'
+    required: false
+    default: 'mcp-audit.sarif'
+  upload-sarif:
+    description: 'Upload SARIF results to GitHub Code Scanning'
+    required: false
+    default: 'false'
+  no-global:
+    description: 'Skip global user client configs (recommended in CI)'
+    required: false
+    default: 'true'
+
+outputs:
+  exit-code:
+    description: 'Exit code from mcp-audit (0=clean, 1=findings>=fail-on, 2=error)'
+    value: ${{ steps.audit.outputs.exit-code }}
+  sarif-file:
+    description: 'Path to generated SARIF file (when written)'
+    value: ${{ steps.audit.outputs.sarif-file }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Build mcp-audit if needed
+      shell: bash
+      run: |
+        if [ ! -f "${{ github.action_path }}/dist/cli.js" ]; then
+          npm --prefix "${{ github.action_path }}" ci
+          npm --prefix "${{ github.action_path }}" run build
+        fi
+
+    - name: Run mcp-audit
+      id: audit
+      shell: bash
+      run: |
+        set +e
+        FORMAT="${{ inputs.format }}"
+        if [ "${{ inputs.upload-sarif }}" = "true" ] && [ "$FORMAT" != "sarif" ]; then
+          FORMAT="sarif"
+        fi
+
+        ARGS=("scan" "--cwd" "${{ inputs.cwd }}" "--fail-on" "${{ inputs.fail-on }}" "--format" "$FORMAT")
+        if [ "${{ inputs.no-global }}" = "true" ]; then
+          ARGS+=("--no-global")
+        fi
+        if [ "${{ inputs.inspect }}" = "true" ]; then
+          ARGS+=("--inspect")
+        fi
+        if [ -n "${{ inputs.config }}" ]; then
+          ARGS+=("--config" "${{ inputs.config }}")
+        fi
+
+        if [ "$FORMAT" = "sarif" ]; then
+          node "${{ github.action_path }}/dist/cli.js" "${ARGS[@]}" > "${{ inputs.sarif-file }}"
+          EXIT_CODE=$?
+          echo "sarif-file=${{ inputs.sarif-file }}" >> "$GITHUB_OUTPUT"
+        else
+          node "${{ github.action_path }}/dist/cli.js" "${ARGS[@]}"
+          EXIT_CODE=$?
+        fi
+
+        echo "exit-code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+        exit 0
+
+    - name: Upload SARIF to GitHub Code Scanning
+      if: ${{ inputs.upload-sarif == 'true' && hashFiles(inputs.sarif-file) != '' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+
+    - name: Enforce mcp-audit exit code
+      shell: bash
+      run: exit "${{ steps.audit.outputs.exit-code }}"
