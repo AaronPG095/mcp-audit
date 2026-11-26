@@ -17,7 +17,7 @@ reviewedBy: Other
 reviewVerdict: pass
 reviewSession: research-subagent
 baseBranch: main
-reviewFingerprint: 20e37bda0e9bd8243cf1d6c215ba49eafdda94355fefe0c7d3369559f46114be
+reviewFingerprint: 6ee810d7c3264bc6fde0fcd51354cc51f7e8d694e4b7a3e6da73fbc94c3017ba
 ---
 # Milestone 3 Sarif CI Docs
 
@@ -76,3 +76,4 @@ Approved Milestone 3 plan:
 
 <!-- One line per session/review, added with `ticket.mjs log` or `ticket.mjs review` -->
 - 2026-11-26 19:42 UTC, Other (review: pass): Independent read-only review passed: SARIF v2.1.0 compliant, zero runtime deps, secret redaction preserved, CI/Action and docs complete. [reviewer: research-subagent]
+- 2026-11-26 19:43 UTC, Other (review: pass): Independent re-review passed: synthetic token split in test/sarif.test.ts preserves redaction assertion and 26/26 tests pass. [reviewer: research-subagent]
