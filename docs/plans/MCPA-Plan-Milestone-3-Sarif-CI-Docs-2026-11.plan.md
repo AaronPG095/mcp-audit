@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: Milestone 3 Sarif CI Docs
 ticket: local://MCPA:MCPA-Plan-Milestone-3-Sarif-CI-Docs-2026-11
-status: in-progress
+status: shipped
 priority: 
 state: 
 due: 
@@ -18,6 +18,7 @@ reviewVerdict: pass
 reviewSession: research-subagent
 baseBranch: main
 reviewFingerprint: 6ee810d7c3264bc6fde0fcd51354cc51f7e8d694e4b7a3e6da73fbc94c3017ba
+pr: https://github.com/AaronPG095/mcp-audit/pull/3
 ---
 # Milestone 3 Sarif CI Docs
 
