@@ -5,6 +5,7 @@ import { runAudit, shouldFailAudit, TOOL_VERSION } from './engine.js';
 import { DEFAULT_INSPECT_TIMEOUT_MS } from './inspect/client.js';
 import { buildLockfile, DEFAULT_LOCKFILE_NAME, writeLockfile } from './lockfile/lockfile.js';
 import { formatJsonReport } from './reporters/json.js';
+import { formatSarifReport } from './reporters/sarif.js';
 import { formatTerminalReport } from './reporters/terminal.js';
 import type { FailOnThreshold, OutputFormat } from './types.js';
 
@@ -25,7 +26,7 @@ Options:
   --inspect              Enable read-only live tools/list + resources/list inspection
   --timeout <ms>         Per-server inspection timeout in ms (default: ${DEFAULT_INSPECT_TIMEOUT_MS})
   --lockfile <path>      Path to lockfile (default: <cwd>/${DEFAULT_LOCKFILE_NAME})
-  --format <fmt>         Output format: terminal | json (default: terminal)
+  --format <fmt>         Output format: terminal | json | sarif (default: terminal)
   --fail-on <sev>        Exit 1 if findings >= severity: CRITICAL | HIGH | MEDIUM | INFO | none (default: HIGH)
   --no-color             Disable ANSI color output
   -h, --help             Show this help message
@@ -49,8 +50,8 @@ function parseFailOn(raw: string | undefined): FailOnThreshold {
 
 function parseFormat(raw: string | undefined): OutputFormat {
   if (!raw || raw === 'terminal') return 'terminal';
-  if (raw === 'json') return 'json';
-  throw new Error(`Invalid --format value "${raw}". Expected terminal or json.`);
+  if (raw === 'json' || raw === 'sarif') return raw;
+  throw new Error(`Invalid --format value "${raw}". Expected terminal, json, or sarif.`);
 }
 
 function parseTimeout(raw: string | undefined): number {
@@ -152,9 +153,11 @@ export async function runCli(
     const stdout =
       format === 'json'
         ? `${formatJsonReport(result)}\n`
-        : `${formatTerminalReport(result, {
-            useColor: parsed.values['no-color'] ? false : undefined,
-          })}\n`;
+        : format === 'sarif'
+          ? `${formatSarifReport(result)}\n`
+          : `${formatTerminalReport(result, {
+              useColor: parsed.values['no-color'] ? false : undefined,
+            })}\n`;
 
     const exitCode = shouldFailAudit(result.findings, failOn) ? 1 : 0;
     return { exitCode, stdout, stderr: '' };

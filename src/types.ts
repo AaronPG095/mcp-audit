@@ -90,7 +90,7 @@ export interface AuditResult {
   summary: AuditSummary;
 }
 
-export type OutputFormat = 'terminal' | 'json';
+export type OutputFormat = 'terminal' | 'json' | 'sarif';
 
 export type FailOnThreshold = Severity | 'none';
 

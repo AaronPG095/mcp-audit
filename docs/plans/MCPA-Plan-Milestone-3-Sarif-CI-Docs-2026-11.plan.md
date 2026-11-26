@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: Milestone 3 Sarif CI Docs
 ticket: local://MCPA:MCPA-Plan-Milestone-3-Sarif-CI-Docs-2026-11
-status: planned
+status: in-progress
 priority: 
 state: 
 due: 
@@ -10,6 +10,9 @@ version:
 impact: 
 devTicketKey: MCPA:MCPA-Plan-Milestone-3-Sarif-CI-Docs-2026-11
 agent: Gemini
+branch: feat/milestone-3-sarif-ci-docs
+worktree: MCP-Audit
+startedAt: 2026-11-26
 ---
 # Milestone 3 Sarif CI Docs
 
@@ -38,7 +41,7 @@ None
 
 ## Steps
 
-- [ ] Implement SARIF v2.1.0 reporter (`src/types.ts`, `src/reporters/sarif.ts`, `src/cli.ts`, `test/sarif.test.ts`) (AC1)
+- [x] Implement SARIF v2.1.0 reporter (`src/types.ts`, `src/reporters/sarif.ts`, `src/cli.ts`, `test/sarif.test.ts`) (AC1)
 - [ ] Add composite GitHub Action (`action.yml`) and CI workflow (`.github/workflows/ci.yml`) (AC2)
 - [ ] Write `THREAT_MODEL.md`, `README.md`, MIT `LICENSE`, and update `ARCHITECTURE.md` (AC3)
 - [ ] Update `package.json` to `0.2.0` and verify `typecheck`, `build`, `test`, and `npm pack --dry-run` (AC4)
