@@ -42,7 +42,7 @@ None
 ## Steps
 
 - [x] Implement `SuppressionRule` types, `loadIgnoreFile`, and `applySuppressions` (`src/types.ts`, `src/ignore/ignore.ts`) (AC1, AC2)
-- [ ] Integrate ignore loading, `--ignore-file`, `--no-ignore`, and warnings into `src/engine.ts`, `src/cli.ts`, and `src/reporters/terminal.ts` (AC2, AC3)
+- [x] Integrate ignore loading, `--ignore-file`, `--no-ignore`, and warnings into `src/engine.ts`, `src/cli.ts`, and `src/reporters/terminal.ts` (AC2, AC3)
 - [ ] Add `test/ignore.test.ts` covering scoping, expiry, validation, `--no-ignore`, and missing `--ignore-file`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
 
 ## Risks

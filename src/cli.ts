@@ -26,6 +26,8 @@ Options:
   --inspect              Enable read-only live tools/list + resources/list inspection
   --timeout <ms>         Per-server inspection timeout in ms (default: ${DEFAULT_INSPECT_TIMEOUT_MS})
   --lockfile <path>      Path to lockfile (default: <cwd>/${DEFAULT_LOCKFILE_NAME})
+  --ignore-file <path>   Path to suppression file (default: <cwd>/.mcp-audit-ignore.json)
+  --no-ignore            Disable loading .mcp-audit-ignore.json suppressions
   --format <fmt>         Output format: terminal | json | sarif (default: terminal)
   --fail-on <sev>        Exit 1 if findings >= severity: CRITICAL | HIGH | MEDIUM | INFO | none (default: HIGH)
   --no-color             Disable ANSI color output
@@ -77,6 +79,8 @@ export async function runCli(
         inspect: { type: 'boolean', default: false },
         timeout: { type: 'string' },
         lockfile: { type: 'string' },
+        'ignore-file': { type: 'string' },
+        'no-ignore': { type: 'boolean', default: false },
         format: { type: 'string' },
         'fail-on': { type: 'string' },
         'no-color': { type: 'boolean', default: false },
@@ -148,6 +152,8 @@ export async function runCli(
       inspect: command === 'diff' ? true : parsed.values.inspect,
       inspectTimeoutMs,
       lockfilePath: command === 'diff' ? resolvedLockfile : parsed.values.lockfile ? resolvedLockfile : undefined,
+      ignoreFilePath: parsed.values['ignore-file'],
+      noIgnore: parsed.values['no-ignore'],
     });
 
     const stdout =
