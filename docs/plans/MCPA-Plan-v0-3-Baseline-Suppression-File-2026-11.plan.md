@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: v0.3 Baseline Suppression File
 ticket: local://MCPA:MCPA-Plan-v0-3-Baseline-Suppression-File-2026-11
-status: in-progress
+status: shipped
 priority: 
 state: 
 due: 
@@ -19,6 +19,7 @@ reviewVerdict: pass
 reviewSession: research-subagent
 baseBranch: main
 reviewFingerprint: 8cc517dd29bc89b10582b407f2796c6671c5325236a2c33cfaf1efb51206044e
+pr: https://github.com/AaronPG095/mcp-audit/pull/4
 ---
 # v0.3 Baseline Suppression File
 
