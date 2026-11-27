@@ -77,6 +77,8 @@ export interface AuditSummary {
   serversScanned: number;
   totalFindings: number;
   countsBySeverity: Record<Severity, number>;
+  suppressedCount?: number;
+  expiredSuppressionsCount?: number;
 }
 
 export interface AuditResult {
@@ -86,6 +88,8 @@ export interface AuditResult {
   cwd: string;
   configs: DiscoveredConfig[];
   findings: Finding[];
+  suppressedFindings?: SuppressedFinding[];
+  expiredSuppressions?: ExpiredSuppressionWarning[];
   inspections?: ServerInspectionResult[];
   summary: AuditSummary;
 }
@@ -104,6 +108,35 @@ export interface ScanOptions {
   inspect?: boolean;
   inspectTimeoutMs?: number;
   lockfilePath?: string;
+  ignoreFilePath?: string;
+  noIgnore?: boolean;
+  now?: Date;
+}
+
+export interface SuppressionRule {
+  ruleId: string;
+  serverName?: string;
+  filePath?: string;
+  reason: string;
+  expiresAt?: string;
+}
+
+export interface IgnoreFile {
+  version: 1;
+  suppressions: SuppressionRule[];
+}
+
+export interface SuppressedFinding {
+  finding: Finding;
+  suppression: SuppressionRule;
+}
+
+export interface ExpiredSuppressionWarning {
+  ruleId: string;
+  serverName?: string;
+  filePath?: string;
+  reason: string;
+  expiresAt: string;
 }
 
 export interface ServerRule {

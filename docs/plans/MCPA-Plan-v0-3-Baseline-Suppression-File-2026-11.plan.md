@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: v0.3 Baseline Suppression File
 ticket: local://MCPA:MCPA-Plan-v0-3-Baseline-Suppression-File-2026-11
-status: planned
+status: in-progress
 priority: 
 state: 
 due: 
@@ -11,6 +11,9 @@ impact:
 blueprint: docs/architecture/MCPA-Blueprint-v0-3-Roadmap.md
 devTicketKey: MCPA:MCPA-Plan-v0-3-Baseline-Suppression-File-2026-11
 agent: Gemini
+branch: feat/v0.3-ignore-baseline
+worktree: MCP-Audit
+startedAt: 2026-11-27
 ---
 # v0.3 Baseline Suppression File
 
@@ -38,7 +41,7 @@ None
 
 ## Steps
 
-- [ ] Implement `SuppressionRule` types, `loadIgnoreFile`, and `applySuppressions` (`src/types.ts`, `src/ignore/ignore.ts`) (AC1, AC2)
+- [x] Implement `SuppressionRule` types, `loadIgnoreFile`, and `applySuppressions` (`src/types.ts`, `src/ignore/ignore.ts`) (AC1, AC2)
 - [ ] Integrate ignore loading, `--ignore-file`, `--no-ignore`, and warnings into `src/engine.ts`, `src/cli.ts`, and `src/reporters/terminal.ts` (AC2, AC3)
 - [ ] Add `test/ignore.test.ts` covering scoping, expiry, validation, `--no-ignore`, and missing `--ignore-file`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
 
