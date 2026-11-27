@@ -34,16 +34,16 @@ None
 
 ## Acceptance criteria
 
-- [ ] AC1: `loadIgnoreFile` validates `version === 1`, non-empty `ruleId` and `reason`, at least one scope (`serverName` or `filePath`), and valid `expiresAt` ISO dates, throwing on invalid entries or missing explicit `--ignore-file`.
-- [ ] AC2: `applySuppressions` moves matching non-expired findings into `suppressedFindings`, leaves expired entries active while recording `expiredSuppressions`, and drops CLI exit code from `1` to `0` when all findings `>= --fail-on` are suppressed.
-- [ ] AC3: `--no-ignore` bypasses `.mcp-audit-ignore.json` so all findings remain active and `--fail-on` exits `1`.
-- [ ] AC4: `npm run typecheck`, `npm run build`, and `npm test` pass with zero runtime dependencies.
+- [x] AC1: `loadIgnoreFile` validates `version === 1`, non-empty `ruleId` and `reason`, at least one scope (`serverName` or `filePath`), and valid `expiresAt` ISO dates, throwing on invalid entries or missing explicit `--ignore-file`. verified(cmd): `npm test` exit 0 @079c031
+- [x] AC2: `applySuppressions` moves matching non-expired findings into `suppressedFindings`, leaves expired entries active while recording `expiredSuppressions`, and drops CLI exit code from `1` to `0` when all findings `>= --fail-on` are suppressed. verified(cmd): `npm test` exit 0 @079c031
+- [x] AC3: `--no-ignore` bypasses `.mcp-audit-ignore.json` so all findings remain active and `--fail-on` exits `1`. verified(cmd): `npm test` exit 0 @079c031
+- [x] AC4: `npm run typecheck`, `npm run build`, and `npm test` pass with zero runtime dependencies. verified(cmd): `npm test` exit 0 @079c031
 
 ## Steps
 
 - [x] Implement `SuppressionRule` types, `loadIgnoreFile`, and `applySuppressions` (`src/types.ts`, `src/ignore/ignore.ts`) (AC1, AC2)
 - [x] Integrate ignore loading, `--ignore-file`, `--no-ignore`, and warnings into `src/engine.ts`, `src/cli.ts`, and `src/reporters/terminal.ts` (AC2, AC3)
-- [ ] Add `test/ignore.test.ts` covering scoping, expiry, validation, `--no-ignore`, and missing `--ignore-file`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
+- [x] Add `test/ignore.test.ts` covering scoping, expiry, validation, `--no-ignore`, and missing `--ignore-file`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
 
 ## Risks
 
