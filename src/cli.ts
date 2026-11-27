@@ -5,6 +5,7 @@ import { runAudit, shouldFailAudit, TOOL_VERSION } from './engine.js';
 import { DEFAULT_INSPECT_TIMEOUT_MS } from './inspect/client.js';
 import { buildLockfile, DEFAULT_LOCKFILE_NAME, writeLockfile } from './lockfile/lockfile.js';
 import { formatJsonReport } from './reporters/json.js';
+import { formatMarkdownReport } from './reporters/markdown.js';
 import { formatSarifReport } from './reporters/sarif.js';
 import { formatTerminalReport } from './reporters/terminal.js';
 import type { FailOnThreshold, OutputFormat } from './types.js';
@@ -28,7 +29,7 @@ Options:
   --lockfile <path>      Path to lockfile (default: <cwd>/${DEFAULT_LOCKFILE_NAME})
   --ignore-file <path>   Path to suppression file (default: <cwd>/.mcp-audit-ignore.json)
   --no-ignore            Disable loading .mcp-audit-ignore.json suppressions
-  --format <fmt>         Output format: terminal | json | sarif (default: terminal)
+  --format <fmt>         Output format: terminal | json | sarif | markdown (default: terminal)
   --fail-on <sev>        Exit 1 if findings >= severity: CRITICAL | HIGH | MEDIUM | INFO | none (default: HIGH)
   --no-color             Disable ANSI color output
   -h, --help             Show this help message
@@ -52,8 +53,10 @@ function parseFailOn(raw: string | undefined): FailOnThreshold {
 
 function parseFormat(raw: string | undefined): OutputFormat {
   if (!raw || raw === 'terminal') return 'terminal';
-  if (raw === 'json' || raw === 'sarif') return raw;
-  throw new Error(`Invalid --format value "${raw}". Expected terminal, json, or sarif.`);
+  if (raw === 'json' || raw === 'sarif' || raw === 'markdown') return raw;
+  throw new Error(
+    `Invalid --format value "${raw}". Expected terminal, json, sarif, or markdown.`,
+  );
 }
 
 function parseTimeout(raw: string | undefined): number {
@@ -161,9 +164,11 @@ export async function runCli(
         ? `${formatJsonReport(result)}\n`
         : format === 'sarif'
           ? `${formatSarifReport(result)}\n`
-          : `${formatTerminalReport(result, {
-              useColor: parsed.values['no-color'] ? false : undefined,
-            })}\n`;
+          : format === 'markdown'
+            ? `${formatMarkdownReport(result)}\n`
+            : `${formatTerminalReport(result, {
+                useColor: parsed.values['no-color'] ? false : undefined,
+              })}\n`;
 
     const exitCode = shouldFailAudit(result.findings, failOn) ? 1 : 0;
     return { exitCode, stdout, stderr: '' };

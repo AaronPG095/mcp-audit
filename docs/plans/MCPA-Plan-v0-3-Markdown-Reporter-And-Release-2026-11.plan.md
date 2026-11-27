@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: v0.3 Markdown Reporter And Release
 ticket: local://MCPA:MCPA-Plan-v0-3-Markdown-Reporter-And-Release-2026-11
-status: planned
+status: in-progress
 priority: 
 state: 
 due: 
@@ -11,6 +11,9 @@ impact:
 blueprint: docs/architecture/MCPA-Blueprint-v0-3-Roadmap.md
 devTicketKey: MCPA:MCPA-Plan-v0-3-Markdown-Reporter-And-Release-2026-11
 agent: Gemini
+branch: feat/v0.3-markdown-release
+worktree: MCP-Audit
+startedAt: 2026-11-27
 ---
 # v0.3 Markdown Reporter And Release
 
@@ -39,7 +42,7 @@ None
 
 ## Steps
 
-- [ ] Implement `src/reporters/markdown.ts`, wire `--format markdown` in `src/types.ts` and `src/cli.ts`, update `action.yml`, and add `test/markdown.test.ts` (AC1, AC2)
+- [x] Implement `src/reporters/markdown.ts`, wire `--format markdown` in `src/types.ts` and `src/cli.ts`, update `action.yml`, and add `test/markdown.test.ts` (AC1, AC2)
 - [ ] Update `README.md`, `THREAT_MODEL.md`, `ARCHITECTURE.md`, `src/engine.ts`, and `package.json` to `0.3.0`, then verify `typecheck`, `build`, `test`, and `npm pack --dry-run` (AC3, AC4)
 
 ## Risks
