@@ -14,6 +14,11 @@ agent: Gemini
 branch: feat/v0.3-ignore-baseline
 worktree: MCP-Audit
 startedAt: 2026-11-27
+reviewedBy: Other
+reviewVerdict: pass
+reviewSession: research-subagent
+baseBranch: main
+reviewFingerprint: 8cc517dd29bc89b10582b407f2796c6671c5325236a2c33cfaf1efb51206044e
 ---
 # v0.3 Baseline Suppression File
 
@@ -68,3 +73,4 @@ Approved PR 1 plan:
 ## Progress log
 
 <!-- One line per session/review, added with `ticket.mjs log` or `ticket.mjs review` -->
+- 2026-11-27 00:22 UTC, Other (review: pass): Independent review passed: scoped .mcp-audit-ignore.json validation, expiry handling, --no-ignore, zero runtime deps, and 30/30 tests pass. [reviewer: research-subagent]
