@@ -87,6 +87,13 @@ export function formatTerminalReport(
     }
   }
 
+  for (const exp of result.expiredSuppressions ?? []) {
+    const scope = exp.serverName ?? exp.filePath ?? '*';
+    lines.push(
+      `${p.yellow}[WARN]${p.reset} Expired suppression for ${exp.ruleId} (${scope}) expired at ${exp.expiresAt}.`,
+    );
+  }
+
   lines.push('');
 
   if (result.findings.length === 0) {
@@ -109,8 +116,11 @@ export function formatTerminalReport(
   }
 
   const c = result.summary.countsBySeverity;
+  const suppressedNote = result.summary.suppressedCount
+    ? ` Suppressed=${result.summary.suppressedCount}`
+    : '';
   lines.push(
-    `${p.bold}Summary:${p.reset} CRITICAL=${c.CRITICAL} HIGH=${c.HIGH} MEDIUM=${c.MEDIUM} INFO=${c.INFO} (Total=${result.summary.totalFindings})`,
+    `${p.bold}Summary:${p.reset} CRITICAL=${c.CRITICAL} HIGH=${c.HIGH} MEDIUM=${c.MEDIUM} INFO=${c.INFO} (Total=${result.summary.totalFindings}${suppressedNote})`,
   );
 
   return lines.join('\n');

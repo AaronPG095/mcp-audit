@@ -1,5 +1,11 @@
+import path from 'node:path';
 import { loadAllConfigs } from './discovery/loader.js';
 import { getCandidateConfigPaths } from './discovery/paths.js';
+import {
+  applySuppressions,
+  DEFAULT_IGNORE_FILE_NAME,
+  loadIgnoreFile,
+} from './ignore/ignore.js';
 import { DEFAULT_INSPECT_TIMEOUT_MS, inspectServer } from './inspect/client.js';
 import { diffLockfile, readLockfile } from './lockfile/lockfile.js';
 import { DYNAMIC_INSPECTION_RULES, evaluateDynamicToxicCombination } from './rules/dynamicRules.js';
@@ -10,11 +16,13 @@ import {
   type AuditResult,
   type AuditSummary,
   type DiscoveredConfig,
+  type ExpiredSuppressionWarning,
   type FailOnThreshold,
   type Finding,
   type ScanOptions,
   type ServerInspectionResult,
   type Severity,
+  type SuppressedFinding,
 } from './types.js';
 
 export const TOOL_VERSION = '0.2.0';
@@ -73,6 +81,8 @@ function buildSummary(
   configsWithErrors: number,
   serversScanned: number,
   findings: Finding[],
+  suppressedCount?: number,
+  expiredSuppressionsCount?: number,
 ): AuditSummary {
   const countsBySeverity: Record<Severity, number> = {
     CRITICAL: 0,
@@ -83,13 +93,20 @@ function buildSummary(
   for (const f of findings) {
     countsBySeverity[f.severity]++;
   }
-  return {
+  const summary: AuditSummary = {
     configsScanned: configs.length,
     configsWithErrors,
     serversScanned,
     totalFindings: findings.length,
     countsBySeverity,
   };
+  if (suppressedCount !== undefined && suppressedCount > 0) {
+    summary.suppressedCount = suppressedCount;
+  }
+  if (expiredSuppressionsCount !== undefined && expiredSuppressionsCount > 0) {
+    summary.expiredSuppressionsCount = expiredSuppressionsCount;
+  }
+  return summary;
 }
 
 function evaluateStaticStage(options: ScanOptions): {
@@ -129,9 +146,35 @@ function evaluateStaticStage(options: ScanOptions): {
   return { cwd, rawConfigs, findings, serversScanned, configsWithErrors };
 }
 
-export function runStaticAudit(options: ScanOptions = {}): AuditResult {
-  const stage = evaluateStaticStage(options);
-  const sortedFindings = sortFindings(stage.findings);
+function finalizeAuditResult(
+  stage: ReturnType<typeof evaluateStaticStage>,
+  rawFindings: Finding[],
+  inspections: ServerInspectionResult[] | undefined,
+  options: ScanOptions,
+): AuditResult {
+  let activeFindings = rawFindings;
+  let suppressedFindings: SuppressedFinding[] | undefined;
+  let expiredSuppressions: ExpiredSuppressionWarning[] | undefined;
+
+  if (!options.noIgnore) {
+    const required = Boolean(options.ignoreFilePath);
+    const ignorePath = options.ignoreFilePath
+      ? path.resolve(stage.cwd, options.ignoreFilePath)
+      : path.join(stage.cwd, DEFAULT_IGNORE_FILE_NAME);
+    const ignoreFile = loadIgnoreFile(ignorePath, required);
+    if (ignoreFile) {
+      const applied = applySuppressions(rawFindings, ignoreFile, stage.cwd, options.now);
+      activeFindings = applied.activeFindings;
+      if (applied.suppressedFindings.length > 0) {
+        suppressedFindings = applied.suppressedFindings;
+      }
+      if (applied.expiredSuppressions.length > 0) {
+        expiredSuppressions = applied.expiredSuppressions;
+      }
+    }
+  }
+
+  const sortedFindings = sortFindings(activeFindings);
   const sanitizedConfigs = sanitizeConfigs(stage.rawConfigs);
 
   return {
@@ -141,13 +184,23 @@ export function runStaticAudit(options: ScanOptions = {}): AuditResult {
     cwd: stage.cwd,
     configs: sanitizedConfigs,
     findings: sortedFindings,
+    suppressedFindings,
+    expiredSuppressions,
+    inspections,
     summary: buildSummary(
       sanitizedConfigs,
       stage.configsWithErrors,
       stage.serversScanned,
       sortedFindings,
+      suppressedFindings?.length,
+      expiredSuppressions?.length,
     ),
   };
+}
+
+export function runStaticAudit(options: ScanOptions = {}): AuditResult {
+  const stage = evaluateStaticStage(options);
+  return finalizeAuditResult(stage, stage.findings, undefined, options);
 }
 
 export async function runAudit(options: ScanOptions = {}): Promise<AuditResult> {
@@ -200,22 +253,5 @@ export async function runAudit(options: ScanOptions = {}): Promise<AuditResult> 
     }
   }
 
-  const sortedFindings = sortFindings(findings);
-  const sanitizedConfigs = sanitizeConfigs(stage.rawConfigs);
-
-  return {
-    tool: 'mcp-audit',
-    version: TOOL_VERSION,
-    scannedAt: new Date().toISOString(),
-    cwd: stage.cwd,
-    configs: sanitizedConfigs,
-    findings: sortedFindings,
-    inspections,
-    summary: buildSummary(
-      sanitizedConfigs,
-      stage.configsWithErrors,
-      stage.serversScanned,
-      sortedFindings,
-    ),
-  };
+  return finalizeAuditResult(stage, findings, inspections, options);
 }
