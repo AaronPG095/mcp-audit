@@ -37,6 +37,25 @@ function collectSchemaTextFields(inspection: ServerInspectionResult): TextField[
     }
   }
 
+  for (const prompt of inspection.prompts) {
+    fields.push({ location: `prompt "${prompt.name}" name`, text: prompt.name });
+    if (prompt.description) {
+      fields.push({ location: `prompt "${prompt.name}" description`, text: prompt.description });
+    }
+    for (const arg of prompt.arguments ?? []) {
+      fields.push({
+        location: `prompt "${prompt.name}" argument "${arg.name}" name`,
+        text: arg.name,
+      });
+      if (arg.description) {
+        fields.push({
+          location: `prompt "${prompt.name}" argument "${arg.name}" description`,
+          text: arg.description,
+        });
+      }
+    }
+  }
+
   return fields;
 }
 

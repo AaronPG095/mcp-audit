@@ -5,9 +5,11 @@ import type {
   AuditLockfile,
   DiscoveredConfig,
   Finding,
+  LockfilePromptEntry,
   LockfileResourceEntry,
   LockfileServerEntry,
   LockfileToolEntry,
+  McpPromptArgumentSchema,
   ServerInspectionResult,
 } from '../types.js';
 
@@ -57,6 +59,17 @@ function hashResource(
   };
 }
 
+function hashPrompt(
+  description?: string,
+  args?: McpPromptArgumentSchema[],
+): LockfilePromptEntry {
+  const normalizedArgs = [...(args ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+  return {
+    descriptionHash: sha256Text(description ?? ''),
+    argumentsHash: sha256Text(canonicalJson(normalizedArgs)),
+  };
+}
+
 export function buildLockfile(
   inspections: ServerInspectionResult[],
   cwd: string,
@@ -78,10 +91,16 @@ export function buildLockfile(
       resources[res.uri] = hashResource(res.name, res.description, res.mimeType);
     }
 
+    const prompts: Record<string, LockfilePromptEntry> = {};
+    for (const prompt of [...insp.prompts].sort((a, b) => a.name.localeCompare(b.name))) {
+      prompts[prompt.name] = hashPrompt(prompt.description, prompt.arguments);
+    }
+
     servers[key] = {
       transport: insp.transport,
       tools,
       resources,
+      prompts,
     };
   }
 
@@ -253,6 +272,62 @@ export function diffLockfile(
             `removed resource: ${lockedUri}`,
           ),
         );
+      }
+    }
+
+    if (locked.prompts !== undefined) {
+      const livePromptMap = new Map(insp.prompts.map((p) => [p.name, p]));
+      for (const [promptName, livePrompt] of livePromptMap.entries()) {
+        const lockedPrompt = locked.prompts[promptName];
+        if (!lockedPrompt) {
+          findings.push(
+            makeDriftFinding(
+              config,
+              insp.configPath,
+              insp.serverName,
+              `New prompt "${promptName}" added since lockfile snapshot.`,
+              `added prompt: ${promptName}`,
+            ),
+          );
+          continue;
+        }
+        const liveHashes = hashPrompt(livePrompt.description, livePrompt.arguments);
+        if (liveHashes.descriptionHash !== lockedPrompt.descriptionHash) {
+          findings.push(
+            makeDriftFinding(
+              config,
+              insp.configPath,
+              insp.serverName,
+              `Prompt "${promptName}" description changed since lockfile snapshot (potential rug-pull).`,
+              `descriptionHash ${lockedPrompt.descriptionHash.slice(0, 12)} -> ${liveHashes.descriptionHash.slice(0, 12)}`,
+            ),
+          );
+        }
+        if (liveHashes.argumentsHash !== lockedPrompt.argumentsHash) {
+          findings.push(
+            makeDriftFinding(
+              config,
+              insp.configPath,
+              insp.serverName,
+              `Prompt "${promptName}" arguments changed since lockfile snapshot.`,
+              `argumentsHash ${lockedPrompt.argumentsHash.slice(0, 12)} -> ${liveHashes.argumentsHash.slice(0, 12)}`,
+            ),
+          );
+        }
+      }
+
+      for (const lockedPromptName of Object.keys(locked.prompts)) {
+        if (!livePromptMap.has(lockedPromptName)) {
+          findings.push(
+            makeDriftFinding(
+              config,
+              insp.configPath,
+              insp.serverName,
+              `Prompt "${lockedPromptName}" was removed since lockfile snapshot.`,
+              `removed prompt: ${lockedPromptName}`,
+            ),
+          );
+        }
       }
     }
   }

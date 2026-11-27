@@ -166,6 +166,18 @@ export interface McpResourceSchema {
   mimeType?: string;
 }
 
+export interface McpPromptArgumentSchema {
+  name: string;
+  description?: string;
+  required?: boolean;
+}
+
+export interface McpPromptSchema {
+  name: string;
+  description?: string;
+  arguments?: McpPromptArgumentSchema[];
+}
+
 export interface ServerInspectionResult {
   serverName: string;
   configPath: string;
@@ -175,6 +187,7 @@ export interface ServerInspectionResult {
   serverInfo?: { name?: string; version?: string };
   tools: McpToolSchema[];
   resources: McpResourceSchema[];
+  prompts: McpPromptSchema[];
   error?: string;
 }
 
@@ -196,10 +209,16 @@ export interface LockfileResourceEntry {
   mimeType?: string;
 }
 
+export interface LockfilePromptEntry {
+  descriptionHash: string;
+  argumentsHash: string;
+}
+
 export interface LockfileServerEntry {
   transport: TransportKind;
   tools: Record<string, LockfileToolEntry>;
   resources: Record<string, LockfileResourceEntry>;
+  prompts?: Record<string, LockfilePromptEntry>;
 }
 
 export interface AuditLockfile {
