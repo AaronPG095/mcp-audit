@@ -1,6 +1,6 @@
 {
   "name": "mcp-audit",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fast, read-only, zero-dependency MCP Security & Permission Auditor CLI",
   "type": "module",
   "bin": {

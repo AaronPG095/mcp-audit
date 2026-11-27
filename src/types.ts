@@ -94,7 +94,7 @@ export interface AuditResult {
   summary: AuditSummary;
 }
 
-export type OutputFormat = 'terminal' | 'json' | 'sarif';
+export type OutputFormat = 'terminal' | 'json' | 'sarif' | 'markdown';
 
 export type FailOnThreshold = Severity | 'none';
 

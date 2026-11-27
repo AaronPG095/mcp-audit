@@ -22,13 +22,17 @@ inputs:
     required: false
     default: 'HIGH'
   format:
-    description: 'Output format (terminal | json | sarif)'
+    description: 'Output format (terminal | json | sarif | markdown)'
     required: false
     default: 'terminal'
   sarif-file:
     description: 'Path to write SARIF output when format=sarif or upload-sarif=true'
     required: false
     default: 'mcp-audit.sarif'
+  markdown-file:
+    description: 'Optional path to write Markdown output when format=markdown'
+    required: false
+    default: ''
   upload-sarif:
     description: 'Upload SARIF results to GitHub Code Scanning'
     required: false
@@ -45,6 +49,9 @@ outputs:
   sarif-file:
     description: 'Path to generated SARIF file (when written)'
     value: ${{ steps.audit.outputs.sarif-file }}
+  markdown-file:
+    description: 'Path to generated Markdown file (when format=markdown and markdown-file is set)'
+    value: ${{ steps.audit.outputs.markdown-file }}
 
 runs:
   using: 'composite'
@@ -87,6 +94,10 @@ runs:
           node "${{ github.action_path }}/dist/cli.js" "${ARGS[@]}" > "${{ inputs.sarif-file }}"
           EXIT_CODE=$?
           echo "sarif-file=${{ inputs.sarif-file }}" >> "$GITHUB_OUTPUT"
+        elif [ "$FORMAT" = "markdown" ] && [ -n "${{ inputs.markdown-file }}" ]; then
+          node "${{ github.action_path }}/dist/cli.js" "${ARGS[@]}" > "${{ inputs.markdown-file }}"
+          EXIT_CODE=$?
+          echo "markdown-file=${{ inputs.markdown-file }}" >> "$GITHUB_OUTPUT"
         else
           node "${{ github.action_path }}/dist/cli.js" "${ARGS[@]}"
           EXIT_CODE=$?

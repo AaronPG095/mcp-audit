@@ -8,10 +8,10 @@
 
 ## Core Principles
 
-- **Strictly Read-Only:** Never modifies user or repository MCP configs. Dynamic inspection (`--inspect`, `lock`, `diff`) is opt-in and structurally restricted via `assertReadOnlyMethod()` to `initialize`, `notifications/initialized`, `tools/list`, and `resources/list` — **`tools/call` is never invoked**.
+- **Strictly Read-Only:** Never modifies user or repository MCP configs. Dynamic inspection (`--inspect`, `lock`, `diff`) is opt-in and structurally restricted via `assertReadOnlyMethod()` to `initialize`, `notifications/initialized`, `tools/list`, `resources/list`, and `prompts/list` — **`tools/call` and `prompts/get` are never invoked**.
 - **Zero Runtime Dependencies:** Built solely on Node.js 20+ built-ins (`node:fs`, `node:path`, `node:os`, `node:util`, `node:crypto`, `node:child_process`, `fetch`).
 - **Windows-First & Cross-Platform:** Auto-discovers repo-local (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, `.codex/config.toml`) and global configs on **Windows**, **macOS**, and **Linux** (Claude Desktop, Claude Code, Cursor, VS Code, Antigravity/Gemini, Codex CLI).
-- **Secret-Safe Output:** Hardcoded credentials are always redacted (`ghp_...01`) before leaving the rule engine across terminal, JSON, and SARIF outputs.
+- **Secret-Safe Output:** Hardcoded credentials are always redacted (`ghp_...01`) before leaving the rule engine across terminal, JSON, SARIF, and Markdown outputs.
 
 ---
 
@@ -24,17 +24,23 @@ npx mcp-audit
 # Repo-only static audit (CI-safe)
 npx mcp-audit scan --no-global
 
-# Static + live read-only tools/list & resources/list inspection
+# Static + live read-only tools/list, resources/list & prompts/list inspection
 npx mcp-audit scan --inspect
 
-# Snapshot canonical tool/schema hashes to mcp-audit.lock.json
+# Snapshot canonical tool/resource/prompt hashes to mcp-audit.lock.json
 npx mcp-audit lock
 
-# Detect tool description or schema drift (rug-pulls) against lockfile
+# Detect tool, resource, or prompt description/schema drift (rug-pulls) against lockfile
 npx mcp-audit diff
 
 # Emit SARIF v2.1.0 for GitHub Code Scanning
 npx mcp-audit scan --no-global --format sarif > mcp-audit.sarif
+
+# Emit GitHub-flavored Markdown for PR comments
+npx mcp-audit scan --no-global --format markdown
+
+# Apply scoped, expiring baseline suppressions (.mcp-audit-ignore.json)
+npx mcp-audit scan --ignore-file .mcp-audit-ignore.json
 ```
 
 ### Exit Codes
@@ -61,7 +67,7 @@ npx mcp-audit scan --no-global --format sarif > mcp-audit.sarif
 | `MCP-INJ-002` | `CRITICAL` | Dynamic | Credential or sensitive file exfiltration directives (`~/.ssh/id_rsa`, `.aws/credentials`, `.env`, `process.env`) |
 | `MCP-INJ-003` | `HIGH` | Dynamic | Cross-tool shadowing or hijacking directives |
 | `MCP-INJ-004` | `MEDIUM` | Dynamic | Hidden Unicode obfuscation (zero-width chars, BiDi overrides, Unicode Tag chars `U+E0000`–`U+E007F`, excessive padding) |
-| `MCP-DRIFT-001` | `HIGH` | Lock / Diff | Tool/resource additions, removals, or description/schema hash drift against `mcp-audit.lock.json` |
+| `MCP-DRIFT-001` | `HIGH` | Lock / Diff | Tool/resource/prompt additions, removals, or description/schema hash drift against `mcp-audit.lock.json` |
 
 ---
 
