@@ -1,5 +1,7 @@
 import { spawn } from 'node:child_process';
 import type {
+  McpPromptArgumentSchema,
+  McpPromptSchema,
   McpResourceSchema,
   McpServerConfig,
   McpToolSchema,
@@ -14,6 +16,7 @@ export const ALLOWED_READ_ONLY_METHODS = new Set([
   'notifications/initialized',
   'tools/list',
   'resources/list',
+  'prompts/list',
 ]);
 
 /**
@@ -116,6 +119,32 @@ function normalizeResources(rawResources: unknown): McpResourceSchema[] {
   return resources;
 }
 
+function normalizePrompts(rawPrompts: unknown): McpPromptSchema[] {
+  if (!Array.isArray(rawPrompts)) return [];
+  const prompts: McpPromptSchema[] = [];
+  for (const item of rawPrompts) {
+    if (!isRecord(item) || typeof item.name !== 'string') continue;
+    let args: McpPromptArgumentSchema[] | undefined;
+    if (Array.isArray(item.arguments)) {
+      args = [];
+      for (const argItem of item.arguments) {
+        if (!isRecord(argItem) || typeof argItem.name !== 'string') continue;
+        args.push({
+          name: argItem.name,
+          description: typeof argItem.description === 'string' ? argItem.description : undefined,
+          required: typeof argItem.required === 'boolean' ? argItem.required : undefined,
+        });
+      }
+    }
+    prompts.push({
+      name: item.name,
+      description: typeof item.description === 'string' ? item.description : undefined,
+      arguments: args,
+    });
+  }
+  return prompts;
+}
+
 export async function inspectStdioServer(
   server: McpServerConfig,
   configPath: string,
@@ -129,6 +158,7 @@ export async function inspectStdioServer(
       status: 'skipped',
       tools: [],
       resources: [],
+      prompts: [],
       error: 'No command specified for stdio server.',
     };
   }
@@ -312,6 +342,12 @@ export async function inspectStdioServer(
       resources.push(...normalizeResources(resourcesRes.result.resources));
     }
 
+    const prompts: McpPromptSchema[] = [];
+    const promptsRes = await sendRequest('prompts/list', {});
+    if (!promptsRes.error && isRecord(promptsRes.result)) {
+      prompts.push(...normalizePrompts(promptsRes.result.prompts));
+    }
+
     return {
       serverName: server.name,
       configPath,
@@ -321,6 +357,7 @@ export async function inspectStdioServer(
       serverInfo,
       tools,
       resources,
+      prompts,
     };
   } catch (err) {
     return {
@@ -330,6 +367,7 @@ export async function inspectStdioServer(
       status: 'error',
       tools: [],
       resources: [],
+      prompts: [],
       error: err instanceof Error ? err.message : String(err),
     };
   } finally {
@@ -388,6 +426,7 @@ export async function inspectHttpServer(
       status: 'skipped',
       tools: [],
       resources: [],
+      prompts: [],
       error: 'No URL specified for HTTP/SSE server.',
     };
   }
@@ -480,6 +519,12 @@ export async function inspectHttpServer(
         ? normalizeResources(resourcesRes.result.resources)
         : [];
 
+    const promptsRes = await postRpc('prompts/list', {});
+    const prompts =
+      promptsRes && !promptsRes.error && isRecord(promptsRes.result)
+        ? normalizePrompts(promptsRes.result.prompts)
+        : [];
+
     return {
       serverName: server.name,
       configPath,
@@ -489,6 +534,7 @@ export async function inspectHttpServer(
       serverInfo,
       tools,
       resources,
+      prompts,
     };
   } catch (err) {
     return {
@@ -498,6 +544,7 @@ export async function inspectHttpServer(
       status: 'error',
       tools: [],
       resources: [],
+      prompts: [],
       error: err instanceof Error ? err.message : String(err),
     };
   }
@@ -521,6 +568,7 @@ export async function inspectServer(
     status: 'skipped',
     tools: [],
     resources: [],
+    prompts: [],
     error: 'Unsupported or unknown MCP transport.',
   };
 }

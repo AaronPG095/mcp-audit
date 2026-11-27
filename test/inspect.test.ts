@@ -71,6 +71,7 @@ describe('Dynamic prompt-injection rules', () => {
         },
       ],
       resources: [],
+      prompts: [],
     };
 
     assert.equal(rulePromptInjectionDirective.evaluate(insp, cfg).length, 1);
