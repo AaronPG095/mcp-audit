@@ -26,21 +26,24 @@ CLI (scan --inspect | lock | diff)
         ├─> Static Pipeline (same as Milestone 1)
         ├─> Read-Only Inspector (src/inspect/client.ts)
         │     Stdio (child_process) & Streamable HTTP/SSE (fetch)
-        │     Structurally restricted to: initialize, notifications/initialized, tools/list, resources/list
+        │     Structurally restricted to: initialize, notifications/initialized, tools/list, resources/list, prompts/list
         ├─> Dynamic Rule Engine (src/rules/dynamicRules.ts)
-        │     MCP-INJ-001..004 (prompt injection, exfiltration, shadowing, hidden Unicode)
+        │     MCP-INJ-001..004 (prompt injection, exfiltration, shadowing, hidden Unicode across tools/resources/prompts)
         │     Dynamic upgrade of MCP-PRIV-004 when live schemas confirm read + outbound/exec
+        ├─> Baseline Suppressions (src/ignore/ignore.ts)
+        │     Scoped, justified, optionally expiring waivers via .mcp-audit-ignore.json
         └─> Schema Lockfile & Drift (src/lockfile/lockfile.ts)
               Canonical SHA-256 hashes in mcp-audit.lock.json; MCP-DRIFT-001 on rug-pull/schema drift
 ```
 
-## Milestone 3 Pipeline (SARIF, GitHub Action & Threat Model)
+## Milestone 3+ Reporters, CI & Threat Model
 
 ```
 AuditResult
   ├─> src/reporters/terminal.ts   Human-readable ANSI/plain report
   ├─> src/reporters/json.ts       Deterministic JSON report
-  └─> src/reporters/sarif.ts      SARIF v2.1.0 (GitHub Code Scanning, partialFingerprints, relative URIs)
+  ├─> src/reporters/sarif.ts      SARIF v2.1.0 (GitHub Code Scanning, partialFingerprints, relative URIs)
+  └─> src/reporters/markdown.ts   GitHub-flavored Markdown report for PR comments
 
 CI & Packaging
   ├─> action.yml                  Composite GitHub Action with optional upload-sarif

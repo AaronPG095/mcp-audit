@@ -25,7 +25,7 @@ import {
   type SuppressedFinding,
 } from './types.js';
 
-export const TOOL_VERSION = '0.2.0';
+export const TOOL_VERSION = '0.3.0';
 
 export function sortFindings(findings: Finding[]): Finding[] {
   return [...findings].sort((a, b) => {

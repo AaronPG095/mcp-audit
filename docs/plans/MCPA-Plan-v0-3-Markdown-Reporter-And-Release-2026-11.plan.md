@@ -35,15 +35,15 @@ None
 
 ## Acceptance criteria
 
-- [ ] AC1: `--format markdown` emits a GFM Markdown report with PASS/FAIL header, severity summary table, suppressed count, collapsible `<details>` findings table with redacted evidence, and zero raw secrets.
-- [ ] AC2: `action.yml` supports `format: markdown` and `markdown-file` output path.
-- [ ] AC3: `README.md`, `THREAT_MODEL.md`, and `ARCHITECTURE.md` accurately document `.mcp-audit-ignore.json`, `prompts/list` (and `prompts/get` non-goal), and `--format markdown`.
-- [ ] AC4: `package.json` and `TOOL_VERSION` are bumped to `0.3.0`, `npm run typecheck`, `npm run build`, `npm test`, and `npm pack --dry-run` pass with zero runtime dependencies.
+- [x] AC1: `--format markdown` emits a GFM Markdown report with PASS/FAIL header, severity summary table, suppressed count, collapsible `<details>` findings table with redacted evidence, and zero raw secrets. verified(cmd): `npm test` exit 0 @3d96b0e
+- [x] AC2: `action.yml` supports `format: markdown` and `markdown-file` output path. verified: Updated action.yml with format=markdown and markdown-file
+- [x] AC3: `README.md`, `THREAT_MODEL.md`, and `ARCHITECTURE.md` accurately document `.mcp-audit-ignore.json`, `prompts/list` (and `prompts/get` non-goal), and `--format markdown`. verified: Synced README.md, THREAT_MODEL.md, and ARCHITECTURE.md
+- [x] AC4: `package.json` and `TOOL_VERSION` are bumped to `0.3.0`, `npm run typecheck`, `npm run build`, `npm test`, and `npm pack --dry-run` pass with zero runtime dependencies. verified(cmd): `npm pack --dry-run` exit 0 @3d96b0e
 
 ## Steps
 
 - [x] Implement `src/reporters/markdown.ts`, wire `--format markdown` in `src/types.ts` and `src/cli.ts`, update `action.yml`, and add `test/markdown.test.ts` (AC1, AC2)
-- [ ] Update `README.md`, `THREAT_MODEL.md`, `ARCHITECTURE.md`, `src/engine.ts`, and `package.json` to `0.3.0`, then verify `typecheck`, `build`, `test`, and `npm pack --dry-run` (AC3, AC4)
+- [x] Update `README.md`, `THREAT_MODEL.md`, `ARCHITECTURE.md`, `src/engine.ts`, and `package.json` to `0.3.0`, then verify `typecheck`, `build`, `test`, and `npm pack --dry-run` (AC3, AC4)
 
 ## Risks
 
