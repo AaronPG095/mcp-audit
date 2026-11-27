@@ -34,16 +34,16 @@ None
 
 ## Acceptance criteria
 
-- [ ] AC1: `ALLOWED_READ_ONLY_METHODS` includes `prompts/list` while `assertReadOnlyMethod` throws on `prompts/get` and `tools/call`, and both stdio and HTTP inspectors populate `prompts` (falling back to `[]` on `-32601`).
-- [ ] AC2: `collectSchemaTextFields` includes prompt names, descriptions, and argument descriptions so `MCP-INJ-001..004` detect poisoned prompt metadata.
-- [ ] AC3: `buildLockfile` and `diffLockfile` hash and diff prompt metadata (`MCP-DRIFT-001`) while remaining backward-compatible with v1 lockfiles that omit `prompts`.
-- [ ] AC4: `npm run typecheck`, `npm run build`, and `npm test` pass with zero runtime dependencies.
+- [x] AC1: `ALLOWED_READ_ONLY_METHODS` includes `prompts/list` while `assertReadOnlyMethod` throws on `prompts/get` and `tools/call`, and both stdio and HTTP inspectors populate `prompts` (falling back to `[]` on `-32601`). verified(cmd): `npm test` exit 0 @5430845
+- [x] AC2: `collectSchemaTextFields` includes prompt names, descriptions, and argument descriptions so `MCP-INJ-001..004` detect poisoned prompt metadata. verified(cmd): `npm test` exit 0 @5430845
+- [x] AC3: `buildLockfile` and `diffLockfile` hash and diff prompt metadata (`MCP-DRIFT-001`) while remaining backward-compatible with v1 lockfiles that omit `prompts`. verified(cmd): `npm test` exit 0 @5430845
+- [x] AC4: `npm run typecheck`, `npm run build`, and `npm test` pass with zero runtime dependencies. verified(cmd): `npm test` exit 0 @5430845
 
 ## Steps
 
 - [x] Extend `src/types.ts` and `src/inspect/client.ts` for read-only `prompts/list` inspection (AC1)
 - [x] Extend `src/rules/dynamicRules.ts` and `src/lockfile/lockfile.ts` for prompt injection detection and drift diffing (AC2, AC3)
-- [ ] Update `fixtures/malicious-mcp/mock-poisoned-server.mjs`, `fixtures/clean-mcp/mock-clean-server.mjs`, and `test/inspect.test.ts`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
+- [x] Update `fixtures/malicious-mcp/mock-poisoned-server.mjs`, `fixtures/clean-mcp/mock-clean-server.mjs`, and `test/inspect.test.ts`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
 
 ## Risks
 
