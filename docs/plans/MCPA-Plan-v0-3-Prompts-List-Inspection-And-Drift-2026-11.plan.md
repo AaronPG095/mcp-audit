@@ -42,7 +42,7 @@ None
 ## Steps
 
 - [x] Extend `src/types.ts` and `src/inspect/client.ts` for read-only `prompts/list` inspection (AC1)
-- [ ] Extend `src/rules/dynamicRules.ts` and `src/lockfile/lockfile.ts` for prompt injection detection and drift diffing (AC2, AC3)
+- [x] Extend `src/rules/dynamicRules.ts` and `src/lockfile/lockfile.ts` for prompt injection detection and drift diffing (AC2, AC3)
 - [ ] Update `fixtures/malicious-mcp/mock-poisoned-server.mjs`, `fixtures/clean-mcp/mock-clean-server.mjs`, and `test/inspect.test.ts`, then verify `typecheck`, `build`, and `test` (AC1, AC2, AC3, AC4)
 
 ## Risks
