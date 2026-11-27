@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: v0.3 Prompts List Inspection And Drift
 ticket: local://MCPA:MCPA-Plan-v0-3-Prompts-List-Inspection-And-Drift-2026-11
-status: in-progress
+status: shipped
 priority: 
 state: 
 due: 
@@ -19,6 +19,7 @@ reviewVerdict: pass
 reviewSession: research-subagent
 baseBranch: main
 reviewFingerprint: f08c1286370204a29fa46dd088fba928de4bea6a44e15cc434621d4212d1ba05
+pr: https://github.com/AaronPG095/mcp-audit/pull/5
 ---
 # v0.3 Prompts List Inspection And Drift
 
