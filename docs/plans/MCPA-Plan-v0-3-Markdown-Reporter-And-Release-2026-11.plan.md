@@ -1,7 +1,7 @@
 ---
 title: Plan - Feature: v0.3 Markdown Reporter And Release
 ticket: local://MCPA:MCPA-Plan-v0-3-Markdown-Reporter-And-Release-2026-11
-status: in-progress
+status: shipped
 priority: 
 state: 
 due: 
@@ -19,6 +19,7 @@ reviewVerdict: pass
 reviewSession: research-subagent
 baseBranch: main
 reviewFingerprint: c142a86317d5d87b903fc3b790c322708a1d0b6fde05693aaaf95ccc6050a6a1
+pr: https://github.com/AaronPG095/mcp-audit/pull/6
 ---
 # v0.3 Markdown Reporter And Release
 
