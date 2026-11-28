@@ -17,30 +17,42 @@
 
 ## Quickstart
 
+Build the tagged release with Node.js 20 or later:
+
+```bash
+git clone --branch v0.3.0 --depth 1 https://github.com/AaronPG095/mcp-audit.git
+cd mcp-audit
+npm ci
+npm run build
+node dist/cli.js --version
+```
+
+Run the examples from the MCP Audit checkout. Replace `/path/to/project` with the repository you want to audit.
+
 ```bash
 # Static audit of repo + local client configs
-npx mcp-audit
+node dist/cli.js scan --cwd /path/to/project
 
 # Repo-only static audit (CI-safe)
-npx mcp-audit scan --no-global
+node dist/cli.js scan --cwd /path/to/project --no-global
 
 # Static + live read-only tools/list, resources/list & prompts/list inspection
-npx mcp-audit scan --inspect
+node dist/cli.js scan --cwd /path/to/project --inspect
 
 # Snapshot canonical tool/resource/prompt hashes to mcp-audit.lock.json
-npx mcp-audit lock
+node dist/cli.js lock --cwd /path/to/project
 
 # Detect tool, resource, or prompt description/schema drift (rug-pulls) against lockfile
-npx mcp-audit diff
+node dist/cli.js diff --cwd /path/to/project
 
 # Emit SARIF v2.1.0 for GitHub Code Scanning
-npx mcp-audit scan --no-global --format sarif > mcp-audit.sarif
+node dist/cli.js scan --cwd /path/to/project --no-global --format sarif > mcp-audit.sarif
 
 # Emit GitHub-flavored Markdown for PR comments
-npx mcp-audit scan --no-global --format markdown
+node dist/cli.js scan --cwd /path/to/project --no-global --format markdown
 
 # Apply scoped, expiring baseline suppressions (.mcp-audit-ignore.json)
-npx mcp-audit scan --ignore-file .mcp-audit-ignore.json
+node dist/cli.js scan --cwd /path/to/project --ignore-file .mcp-audit-ignore.json
 ```
 
 ### Exit Codes
@@ -93,7 +105,7 @@ Summary: CRITICAL=3 HIGH=5 MEDIUM=3 INFO=0 (Total=11)
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: AaronPG095/mcp-audit@main
+- uses: AaronPG095/mcp-audit@v0.3.0
   with:
     fail-on: HIGH
     upload-sarif: 'true'
